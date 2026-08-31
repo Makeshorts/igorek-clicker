@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Игорёк Clicker — Global Menu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game" id="game">
+    <section class="left-menu" aria-label="Главное меню">
+      <button class="image-menu-button" data-open="upgrade"><img src="assets/Улучшения.png" alt="Улучшение"></button>
+      <button class="image-menu-button" data-open="shop"><img src="assets/Магазин.png" alt="Магазин"></button>
+      <button class="image-menu-button" data-open="skins"><img src="assets/Игори.png" alt="Игори"></button>
+      <button class="image-menu-button" data-open="cards"><img src="assets/Карточки.png" alt="Карточки"></button>
+    </section>
+
+    <section class="center-stage">
+      <button class="igorek-head" id="clickTarget" aria-label="Тыкни по Игорьку">
+        <img id="currentSkin" src="assets/Defaut.png" alt="Игорёк" draggable="false" />
+      </button>
+      <div class="coin-pop-layer" id="coinPopLayer" aria-hidden="true"></div>
+    </section>
+
+    <button class="settings image-settings-button" data-open="settings"><img src="assets/Настройки.png" alt="Настройки"></button>
+    <button class="faq-button" data-open="faq" title="FAQ / Wiki">?</button>
+
+    <aside class="stats-panel" aria-label="Статистика Игорька">
+      <img class="stats-bg" src="assets/Statistics Board.png" alt="" />
+      <div class="stats-content">
+        <h1>Статистика Игорька</h1>
+        <span class="id">ID: <b id="playerId">...</b></span>
+        <div class="stats-grid">
+          <div class="stat-block"><span class="stat-label">Уровень</span><b class="stat-value" id="level">1</b></div>
+          <div class="stat-block"><span class="stat-label">Кубки</span><b class="stat-value"><span id="cups">1</span> 🏆</b><small id="cupRank">x1</small></div>
+          <div class="stat-block"><span class="stat-label">XP</span><b class="stat-value stat-xp"><span id="xp">0</span> / <span id="xpNeed">2000</span></b></div>
+          <div class="stat-block"><span class="stat-label">Монет</span><b class="stat-value" id="coins">0</b></div>
+          <div class="stat-block"><span class="stat-label">Клик</span><b class="stat-value" id="perClick">1</b></div>
+          <div class="stat-block"><span class="stat-label">Крит</span><b class="stat-value" id="critChance">0%</b></div>
+          <div class="stat-block"><span class="stat-label">Пассив</span><b class="stat-value"><span id="passiveIncome">0</span>/сек</b></div>
+          <div class="stat-block"><span class="stat-label">Удача</span><b class="stat-value" id="luck">0%</b></div>
+          <div class="stat-block"><span class="stat-label">Скинов</span><b class="stat-value" id="skinsCount">1</b></div>
+          <div class="stat-block"><span class="stat-label">Карт</span><b class="stat-value" id="cardsCount">0</b></div>
+        </div>
+        <div class="medals-title">Медали:</div>
+        <div class="medal-slot" title="Медаль 2026">
+          <img src="assets/medal-2026.png" alt="Медаль 2026">
+        </div>
+      </div>
+    </aside>
+
+    <button class="achievements-button" data-open="achievements" title="Достижения">
+      <img src="assets/achievement-cup.png" alt="Достижения">
+    </button>
+
+    <button class="leaderboard-button" data-open="leaderboard" title="Топ в мире">🌍</button>
+
+    <dialog class="modal login-modal" id="loginModal">
+      <div class="modal-card login-card">
+        <h2>Создай логин</h2>
+        <p>Логин нужен для таблицы лидеров. ID игрока создаётся автоматически и останется за тобой.</p>
+        <label class="login-label">Твой логин</label>
+        <input id="loginInput" class="login-input" maxlength="20" placeholder="Например: IgorekPro">
+        <div class="login-id">ID: <b id="loginPlayerId">...</b></div>
+        <button class="buy login-submit" id="loginSubmit">Начать игру</button>
+        <p class="hint">От 3 до 20 символов. Можно русские/английские буквы, цифры, пробел, _ и -.</p>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="achievements">
+      <div class="modal-card achievements-card">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>Достижения</h2>
+        <p>Открываются за кубки и дают маленький бонус к общему доходу.</p>
+        <div class="achievement-summary" id="achievementSummary"></div>
+        <div class="achievement-list" id="achievementList"></div>
+      </div>
+    </dialog>
+
+    <dialog class="modal leaderboard-modal" id="leaderboard">
+      <div class="modal-card leaderboard-card">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>Топ в мире</h2>
+        <p>Онлайн-рейтинг игроков по кубкам. На Vercel данные берутся из базы данных.</p>
+        <div class="leaderboard-player-card" id="leaderboardPlayerCard"></div>
+        <div class="leaderboard-list" id="leaderboardList"></div>
+      </div>
+    </dialog>
+
+    <dialog class="modal faq-modal" id="faq">
+      <div class="modal-card faq-card">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>FAQ / Wiki</h2>
+        <div class="faq-tabs">
+          <button class="faq-tab active" id="faqTabInfo" data-faq-tab="info">Инфо</button>
+          <button class="faq-tab" id="faqTabUpdates" data-faq-tab="updates">Обновления</button>
+        </div>
+        <div class="faq-layout">
+          <aside class="faq-sections" id="faqSections"></aside>
+          <article class="faq-article">
+            <img class="faq-image" id="faqImage" alt="">
+            <h3 id="faqTitle">Выбери раздел</h3>
+            <div class="faq-text" id="faqText"></div>
+          </article>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="upgrade">
+      <div class="modal-card upgrade-card">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>Улучшения</h2>
+        <p>Прокачивай не только клик: пассив, криты, удачу, XP и общий доход. Улучшения работают вместе с карточками, местами, кубками и достижениями.</p>
+        <div class="upgrade-summary" id="upgradeSummary"></div>
+        <div class="upgrade-list" id="upgradeList"></div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="shop">
+      <div class="modal-card shop-card">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>Магазин</h2>
+        <p>Скины Игорька падают из боксов, а баффы — из пакетиков с карточками.</p>
+
+        <h3>Боксы со скинами</h3>
+        <div class="boxes">
+          <button class="box" data-box="standard"><img src="assets/Standart Box.png" alt="Standart Box"><b>Standart Box</b><span>100 монет</span></button>
+          <button class="box" data-box="soviet"><img src="assets/Soviet Box.png" alt="Soviet Box"><b>Soviet Box</b><span>250 монет</span></button>
+          <button class="box" data-box="nikke"><img src="assets/Nikke Box.png" alt="Nikke Box"><b>Nikke Box</b><span>500 монет</span></button>
+        </div>
+
+        <h3>Пакетик карточек</h3>
+        <div class="row-card card-pack-row">
+          <div>
+            <b>Card Pack</b>
+            <span>Цена: <span id="cardPackCost">10000</span> монет. Можно открыть сразу до 100 штук.</span>
+          </div>
+          <div class="bulk-pack-controls">
+            <input id="cardPackAmount" type="number" min="1" max="100" value="1" aria-label="Количество пакетиков">
+            <button class="buy" id="openCardPack">Открыть</button>
+            <button class="buy" id="openBulkCardPacks">Оптом</button>
+          </div>
+        </div>
+
+        <h3>Места</h3>
+        <div class="background-shop" id="backgroundShop"></div>
+
+        <div class="drop-result" id="dropResult"></div>
+      </div>
+    </dialog>
+
+    <dialog class="skin-screen-modal" id="skins">
+      <div class="skin-screen">
+        <button class="back-button" data-close>Назад</button>
+        <div class="skin-big-preview">
+          <img id="skinPreview" src="assets/Defaut.png" alt="Выбранный Игорёк">
+          <div class="skin-preview-name" id="skinPreviewName">Обычный Игорёк</div>
+        </div>
+        <section class="igorki-board">
+          <div class="igorki-title">Игорьки</div>
+          <div class="igorki-grid" id="inventory"></div>
+          <div class="igorki-hint">Редкость скина влияет на доход за клик. Формула: сила Игорька × уровень игрока × бонусы карточек.</div>
+        </section>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="cards">
+      <div class="modal-card cards-card big-card-modal">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>Карточки-баффы</h2>
+        <p>Карточки не пустышки: каждая копия усиливает статистику. Самая редкая — <b>Гиппер-Редкая</b>.</p>
+        <div class="card-summary" id="cardSummary"></div>
+        <div class="card-collection" id="cardCollection"></div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="settings">
+      <div class="modal-card">
+        <button class="close" data-close><img src="assets/Close_Button.png" alt="Закрыть"></button>
+        <h2>Настройки</h2>
+        <label class="toggle"><input type="checkbox" id="soundToggle"> Звуки включены</label>
+        <label class="toggle"><input type="checkbox" id="musicToggle"> Музыка включена</label>
+
+        <h3 class="settings-subtitle">Профиль</h3>
+        <div class="profile-settings">
+          <span>ID: <b id="settingsPlayerId">...</b></span>
+          <input id="settingsLoginInput" maxlength="20" placeholder="Логин">
+          <button class="buy" id="saveLoginButton">Сохранить логин</button>
+        </div>
+
+        <h3 class="settings-subtitle">Выбор места</h3>
+        <div class="background-select" id="backgroundSelect"></div>
+
+        <button class="danger" id="resetSave">Сбросить прогресс</button>
+        <p class="hint">Звуки лежат в папке <b>sounds/</b>. Формат — <b>WAV</b>. Если файла нет, игра не ломается, а просто пропускает этот звук.</p>
+      </div>
+    </dialog>
+
+    <dialog class="opening-dialog" id="openingOverlay" aria-label="Открытие награды">
+      <div class="opening-window">
+        <div class="opening-title" id="openingTitle">Открытие...</div>
+        <div class="opening-stage">
+          <div class="opening-light"></div>
+          <div class="opening-result" id="openingResult"></div>
+        </div>
+        <button class="opening-close" id="openingClose">Забрать</button>
+      </div>
+    </dialog>
+
+    <button class="music-start" id="musicStart">▶ Музыка</button>
+    <div class="toast" id="toast"></div>
+  </main>
+  <script src="js/vercel-api.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

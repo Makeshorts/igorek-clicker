@@ -1,0 +1,17 @@
+{
+  "name": "igorek-clicker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "python3 -m http.server 8000",
+    "check": "node --check js/game.js && node --check js/vercel-api.js && node --check api/db.js && node --check api/player.js && node --check api/leaderboard.js"
+  },
+  "dependencies": {
+    "postgres": "latest"
+  },
+  "devDependencies": {
+    "vercel": "latest"
+  }
+}
